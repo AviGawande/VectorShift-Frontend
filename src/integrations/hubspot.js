@@ -17,7 +17,7 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
             formData.append('user_id', user);
             formData.append('org_id', org);
             const response = await axios.post(`http://localhost:8000/integrations/hubspot/authorize`, formData);
-            const authURL = response?.data?.auth_url;
+            const authURL = response?.data?.authorization_url;
 
             const newWindow = window.open(authURL, 'HubSpot Authorization', 'width=600, height=600');
 
