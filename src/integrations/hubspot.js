@@ -13,10 +13,10 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
     const handleConnectClick = async () => {
         try {
             setIsConnecting(true);
-            const formData = new FormData();
-            formData.append('user_id', user);
-            formData.append('org_id', org);
-            const response = await axios.post(`http://localhost:8000/integrations/hubspot/authorize`, formData);
+            const response = await axios.post(`http://localhost:8000/integrations/hubspot/authorize_hubspot`, {
+                user_id: user,
+                org_id: org
+            });
             const authURL = response?.data?.authorization_url;
 
             const newWindow = window.open(authURL, 'HubSpot Authorization', 'width=600, height=600');
@@ -35,10 +35,10 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
 
     const handleWindowClosed = async () => {
         try {
-            const formData = new FormData();
-            formData.append('user_id', user);
-            formData.append('org_id', org);
-            const response = await axios.post(`http://localhost:8000/integrations/hubspot/credentials`, formData);
+            const response = await axios.post(`http://localhost:8000/integrations/hubspot/credentials`, {
+                user_id: user,
+                org_id: org
+            });
             const credentials = response.data; 
             if (credentials) {
                 setIsConnecting(false);
@@ -54,7 +54,7 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
 
     useEffect(() => {
         setIsConnected(integrationParams?.credentials ? true : false)
-    }, []);
+    }, [integrationParams]);
 
     return (
         <>
