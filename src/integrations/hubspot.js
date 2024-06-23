@@ -19,19 +19,24 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
             });
             const authURL = response?.data?.authorization_url;
 
-            const newWindow = window.open(authURL, 'HubSpot Authorization', 'width=600, height=600');
-
-            const pollTimer = window.setInterval(() => {
-                if (newWindow?.closed !== false) { 
-                    window.clearInterval(pollTimer);
-                    handleWindowClosed();
-                }
-            }, 200);
+            if (authURL) {
+                const newWindow = window.open(authURL, 'HubSpot Authorization', 'width=600, height=600');
+                const pollTimer = window.setInterval(() => {
+                    if (newWindow?.closed !== false) {
+                        window.clearInterval(pollTimer);
+                        handleWindowClosed();
+                    }
+                }, 200);
+            } else {
+                console.error('Authorization URL is not available');
+                setIsConnecting(false);
+            }
         } catch (e) {
+            console.error('Error during authorization:', e);
             setIsConnecting(false);
-            alert(e?.response?.data?.detail);
+            alert(e?.response?.data?.detail || 'An error occurred during authorization');
         }
-    }
+    };
 
     const handleWindowClosed = async () => {
         try {
@@ -39,43 +44,46 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
                 user_id: user,
                 org_id: org
             });
-            const credentials = response.data; 
+            const credentials = response.data;
             if (credentials) {
                 setIsConnecting(false);
                 setIsConnected(true);
                 setIntegrationParams(prev => ({ ...prev, credentials: credentials, type: 'HubSpot' }));
+            } else {
+                console.error('No credentials received');
+                setIsConnecting(false);
             }
-            setIsConnecting(false);
         } catch (e) {
+            console.error('Error fetching credentials:', e);
             setIsConnecting(false);
-            alert(e?.response?.data?.detail);
+            alert(e?.response?.data?.detail || 'An error occurred while fetching credentials');
         }
-    }
+    };
 
     useEffect(() => {
-        setIsConnected(integrationParams?.credentials ? true : false)
+        setIsConnected(!!integrationParams?.credentials);
     }, [integrationParams]);
 
     return (
         <>
-        <Box sx={{mt: 2}}>
-            Parameters
-            <Box display='flex' alignItems='center' justifyContent='center' sx={{mt: 2}}>
-                <Button 
-                    variant='contained' 
-                    onClick={isConnected ? () => {} : handleConnectClick}
-                    color={isConnected ? 'success' : 'primary'}
-                    disabled={isConnecting}
-                    style={{
-                        pointerEvents: isConnected ? 'none' : 'auto',
-                        cursor: isConnected ? 'default' : 'pointer',
-                        opacity: isConnected ? 1 : undefined
-                    }}
-                >
-                    {isConnected ? 'HubSpot Connected' : isConnecting ? <CircularProgress size={20} /> : 'Connect to HubSpot'}
-                </Button>
+            <Box sx={{ mt: 2 }}>
+                Parameters
+                <Box display='flex' alignItems='center' justifyContent='center' sx={{ mt: 2 }}>
+                    <Button
+                        variant='contained'
+                        onClick={isConnected ? () => {} : handleConnectClick}
+                        color={isConnected ? 'success' : 'primary'}
+                        disabled={isConnecting}
+                        style={{
+                            pointerEvents: isConnected ? 'none' : 'auto',
+                            cursor: isConnected ? 'default' : 'pointer',
+                            opacity: isConnected ? 1 : undefined
+                        }}
+                    >
+                        {isConnected ? 'HubSpot Connected' : isConnecting ? <CircularProgress size={20} /> : 'Connect to HubSpot'}
+                    </Button>
+                </Box>
             </Box>
-        </Box>
-      </>
+        </>
     );
-}
+};
