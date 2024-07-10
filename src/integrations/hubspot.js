@@ -38,28 +38,7 @@ export const HubSpotIntegration = ({ user, org, integrationParams, setIntegratio
         }
     };
 
-    const handleWindowClosed = async () => {
-        try {
-            const response = await axios.post(`http://localhost:8000/integrations/hubspot/credentials`, {
-                user_id: user,
-                org_id: org
-            });
-            const credentials = response.data;
-            if (credentials) {
-                setIsConnecting(false);
-                setIsConnected(true);
-                setIntegrationParams(prev => ({ ...prev, credentials: credentials, type: 'HubSpot' }));
-            } else {
-                console.error('No credentials received');
-                setIsConnecting(false);
-            }
-        } catch (e) {
-            console.error('Error fetching credentials:', e);
-            setIsConnecting(false);
-            alert(e?.response?.data?.detail || 'An error occurred while fetching credentials');
-        }
-    };
-
+    
     useEffect(() => {
         setIsConnected(!!integrationParams?.credentials);
     }, [integrationParams]);
