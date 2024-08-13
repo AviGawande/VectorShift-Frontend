@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { BACKEND_URL } from "../config";
+import React, { useState } from "react";
 import axios from "axios";
+import { BACKEND_URL } from "../config"; // Ensure that BACKEND_URL is correctly defined in your config file
 
 export const Signin = () => {
     const [username, setUsername] = useState("");
