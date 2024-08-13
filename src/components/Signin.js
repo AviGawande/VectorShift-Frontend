@@ -6,37 +6,40 @@ export const Signin = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
+    const handleSubmit = async () => {
+        try {
+            await axios.post(
+                `${BACKEND_URL}/signin`,
+                {
+                    username,
+                    password,
+                },
+                {
+                    withCredentials: true,
+                }
+            );
+            alert("You are logged in");
+        } catch (error) {
+            console.error("Error logging in", error);
+            alert("Failed to log in. Please try again.");
+        }
+    };
+
     return (
         <div>
             <input
-                onChange={(e) => {
-                    setUsername(e.target.value);
-                }}
+                value={username} // Controlled component
+                onChange={(e) => setUsername(e.target.value)}
                 type="text"
-                placeholder="username"
+                placeholder="Username"
             />
             <input
-                onChange={(e) => {
-                    setPassword(e.target.value);
-                }}
+                value={password} // Controlled component
+                onChange={(e) => setPassword(e.target.value)}
                 type="password"
-                placeholder="password"
+                placeholder="Password"
             />
-            <button
-                onClick={async () => {
-                    await axios.post(
-                        `${BACKEND_URL}/signin`,
-                        {
-                            username,
-                            password,
-                        },
-                        {
-                            withCredentials: true,
-                        }
-                    );
-                    alert("you are logged in");
-                }}
-            >
+            <button onClick={handleSubmit}>
                 Submit
             </button>
         </div>
